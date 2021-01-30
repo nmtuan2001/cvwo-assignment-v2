@@ -1,30 +1,30 @@
-class ProjectController < ApplicationController
+class ProjectsController < ApplicationController
   before_action :set_project, only: [:show, :update, :destroy]
 
-  # GET /project
+  # GET /projects
   def index
-    @project = Project.all
-    json_response(@project)
+    @projects = current_user.projects
+    json_response(@projects)
   end
 
-  # POST /project
+  # POST /projects
   def create
-    @project = Project.create!(project_params)
+    @project = current_user.projects.create!(project_params)
     json_response(@project, :created)
   end
 
-  # GET /project/:id
+  # GET /projects/:id
   def show
     json_response(@project)
   end
 
-  # PUT /project/:id
+  # PUT /projects/:id
   def update
     @project.update(project_params)
     head :no_content
   end
 
-  # DELETE /project/:id
+  # DELETE /projects/:id
   def destroy
     @project.destroy
     head :no_content
@@ -33,7 +33,7 @@ class ProjectController < ApplicationController
   private
 
   def project_params
-    params.permit(:title, :note)
+    params.permit(:project_name, :project_note)
   end
 
   def set_project

@@ -2,8 +2,5 @@ class Task < ApplicationRecord
   belongs_to :project
 
   # validation
-  validates_presence_of :title
-  validates_presence_of :note
-  validates_presence_of :completed
-  validates_presence_of :deadline
+  validates_presence_of :task_name, :task_note, :deadline
 end

@@ -1,14 +1,15 @@
 require 'rails_helper'
 
-RSpec.describe "Projects", type: :request do
-  # initialize test data
-  let!(:projects) { create_list(:project, 10) }
-  let(:project_id) { project.first.id }
+RSpec.describe "Project API", type: :request do
+  let(:user) { create(:user) }
+  let!(:projects) { create_list(:project, 10, created_by: user.id) }
+  let(:project_id) { projects.first.id }
+  let(:headers) { valid_headers }
 
-  describe 'GET /project' do
-    before { get '/project' }
+  describe 'GET /projects' do
+    before { get '/projects', params: {}, headers: headers }
 
-    it 'returns project' do
+    it 'returns projects' do
       expect(json).not_to be_empty
       expect(json.size).to eq(10)
     end
@@ -18,8 +19,8 @@ RSpec.describe "Projects", type: :request do
     end
   end
 
-  describe 'GET /project/:id' do
-    before { get "/project/#{project_id}" }
+  describe 'GET /projects/:id' do
+    before { get "/projects/#{project_id}", params: {}, headers: headers }
 
     context 'when the record exists' do
       it 'returns the project' do
@@ -45,14 +46,16 @@ RSpec.describe "Projects", type: :request do
     end
   end
 
-  describe 'POST /project' do
-    let(:valid_attributes) { { title: 'Project 1', created_by: 'User' } }
+  describe 'POST /projects' do
+    let(:valid_attributes) do
+      { project_name: 'Project Alpha', project_note: 'Note of Project Alpha', created_by: user.id.to_s }.to_json
+    end
 
     context 'when the request is valid' do
-      before { post '/project', params: valid_attributes }
+      before { post '/projects', params: valid_attributes, headers: headers }
 
       it 'creates a project' do
-        expect(json['title']).to eq('Project 1')
+        expect(json['project_name']).to eq('Project Alpha')
       end
 
       it 'returns status code 201' do
@@ -61,24 +64,25 @@ RSpec.describe "Projects", type: :request do
     end
 
     context 'when the request is invalid' do
-      before { post '/project', params: { title: 'Error' } }
+      let(:invalid_attributes) { { title: nil }.to_json }
+      before { post '/projects', params: invalid_attributes, headers: headers }
 
       it 'returns status code 422' do
         expect(response).to have_http_status(422)
       end
 
       it 'returns a validation failure message' do
-        expect(response.body)
-          .to match(/Validation failed: Note can't be blank/)
+        expect(json['message'])
+          .to match(/Validation failed: Project name can't be blank/)
       end
     end
   end
 
-  describe 'PUT /project/:id' do
-    let(:valid_attributes) { { title: 'Project Name' } }
+  describe 'PUT /projects/:id' do
+    let(:valid_attributes) { { project_name: 'Project Name' }.to_json }
 
     context 'when the record exists' do
-      before { put "/project/#{project_id}", params: valid_attributes }
+      before { put "/projects/#{project_id}", params: valid_attributes, headers: headers }
 
       it 'updates the record' do
         expect(response.body).to be_empty
@@ -90,8 +94,8 @@ RSpec.describe "Projects", type: :request do
     end
   end
 
-  describe 'DELETE /project/:id' do
-    before { delete "/project/#{project_id}" }
+  describe 'DELETE /projects/:id' do
+    before { delete "/projects/#{project_id}", params: {}, headers: headers }
 
     it 'returns status code 204' do
       expect(response).to have_http_status(204)

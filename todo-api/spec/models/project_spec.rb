@@ -6,6 +6,7 @@ RSpec.describe Project, type: :model do
   # Association test
   it { should have_many(:tasks).dependent(:destroy) }
   # Validation tests
-  it { should validate_presence_of(:title) }
-  it { should validate_presence_of(:note) }
+  it { should validate_presence_of(:project_name) }
+  it { should validate_presence_of(:project_note) }
+  it { should validate_presence_of(:created_by) }
 end
