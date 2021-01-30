@@ -17,7 +17,7 @@ gem 'puma', '~> 4.1'
 gem 'bcrypt', '~> 3.1.7'
 # Token based authentication
 gem 'jwt'
-
+gem 'faker'
 # Use Active Storage variant
 # gem 'image_processing', '~> 1.2'
 
@@ -45,7 +45,7 @@ group :test do
   #Clean test database
   gem 'database_cleaner'
   #Create fake data
-  gem 'faker'
+  # gem 'faker'
   #Fixtures replacement
   gem 'factory_bot_rails'
   #Additional matchers
